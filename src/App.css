@@ -142,13 +142,13 @@ h2 { margin: 0; font-size: 20px; letter-spacing: -.5px; }
 }
 
 
-/* Screen reset button */
+/* Screen reset button — visually matches the 5 GAMES tag */
 .generator-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.reset-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 38px; padding: 8px 11px; border: 1px solid #354057; border-radius: 9px; background: transparent; color: #aebbd0; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
-.reset-btn:hover { border-color: #b8fa83; color: #b8fa83; background: #b8fa8310; }
-:root[data-theme="light"] .reset-btn { border-color: #d3dbe7; color: #526078; }
-:root[data-theme="light"] .reset-btn:hover { border-color: #2e7d32; color: #2e7d32; background: #2e7d320a; }
+.reset-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 32px; padding: 7px 10px; border: 0; border-radius: 8px; background: #202b3b; color: #b8fa83; font-size: 12px; font-weight: 500; letter-spacing: .2px; white-space: nowrap; cursor: pointer; transition: background .2s, color .2s; }
+.reset-btn:hover { background: #293b2b; color: #ceffac; }
+:root[data-theme="light"] .reset-btn { background: #edf6e9; color: #2e7d32; }
+:root[data-theme="light"] .reset-btn:hover { background: #e0f0d8; color: #256629; }
 @media (max-width: 480px) {
   .generator-actions { flex-direction: column-reverse; align-items: flex-end; gap: 6px; }
-  .reset-btn { min-height: 34px; padding: 6px 8px; font-size: 11px; }
+  .reset-btn { min-height: 30px; padding: 6px 9px; font-size: 11px; }
 }
