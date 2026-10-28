@@ -9,30 +9,39 @@ const getBallColor = (number) => {
   return "green";
 };
 
-function generateNumbers() {
+function generateGame() {
   const numbers = Array.from({ length: 45 }, (_, i) => i + 1);
   for (let i = numbers.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
   }
-  return numbers.slice(0, 6).sort((a, b) => a - b);
+
+  const mainNumbers = numbers.slice(0, 5).sort((a, b) => a - b);
+  const bonusNumber = numbers[5];
+  return { numbers: mainNumbers, bonus: bonusNumber };
 }
 
 function App() {
-  const [count, setCount] = useState(5);
   const [results, setResults] = useState([]);
   const [history, setHistory] = useState([]);
   const [copied, setCopied] = useState(false);
 
   const recommend = () => {
-    const newResults = Array.from({ length: count }, () => generateNumbers());
+    const newResults = Array.from({ length: 5 }, generateGame);
     setResults(newResults);
     setHistory((prev) => [...newResults, ...prev].slice(0, 20));
     setCopied(false);
   };
 
-  const copyNumbers = async (numbers) => {
-    const text = numbers.join(", ");
+  const recommendMore = () => {
+    const newResults = Array.from({ length: 5 }, generateGame);
+    setResults((prev) => [...prev, ...newResults]);
+    setHistory((prev) => [...newResults, ...prev].slice(0, 20));
+    setCopied(false);
+  };
+
+  const copyNumbers = async (game) => {
+    const text = [...game.numbers, "+", game.bonus].join(" ");
     try {
       if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
       await navigator.clipboard.writeText(text);
@@ -41,6 +50,16 @@ function App() {
       window.prompt("번호를 복사하세요.", text);
     }
   };
+
+  const renderGameNumbers = (game, compact = false) => (
+    <>
+      {game.numbers.map((number) => (
+        <span key={number} className={`${compact ? "mini-ball" : "ball"} ${getBallColor(number)}`}>{number}</span>
+      ))}
+      <span className={compact ? "mini-plus" : "bonus-plus"} aria-label="보너스 번호 구분">+</span>
+      <span className={`${compact ? "mini-ball" : "ball"} bonus-ball ${getBallColor(game.bonus)}`}>{game.bonus}</span>
+    </>
+  );
 
   return (
     <main className="app">
@@ -55,49 +74,40 @@ function App() {
       <section className="hero">
         <div className="eyebrow"><span className="status-dot" />YOUR LUCKY NUMBERS</div>
         <h1>오늘의 행운을<br /><span className="green">번호로 만나보세요.</span></h1>
-        <p className="description">1부터 45까지, 중복 없이 6개의 번호를 추천해 드립니다.</p>
+        <p className="description">게임마다 로또 번호 5개와 보너스 번호 1개를 추천합니다.</p>
 
         <section className="generator" aria-labelledby="generator-title">
           <div className="generator-top">
             <div>
               <h2 id="generator-title">행운 번호 생성기</h2>
-              <p>원하는 추천 조합 수를 선택하세요.</p>
+              <p>한 번에 5게임씩 새로운 번호를 추천합니다.</p>
             </div>
-            <span className="round-tag">6 / 45</span>
-          </div>
-          <div className="count-options" aria-label="추천 조합 수">
-            {[1, 5, 10].map((value) => (
-              <button key={value} type="button"
-                className={count === value ? "count active" : "count"}
-                onClick={() => setCount(value)} aria-pressed={count === value}>
-                {value}조합
-              </button>
-            ))}
+            <span className="round-tag">5 GAMES</span>
           </div>
           <button className="generate-btn" type="button" onClick={recommend}>
-            <span aria-hidden="true">✦</span> 행운 번호 추천받기
+            <span aria-hidden="true">✦</span> 로또 번호 추천받기
           </button>
-          <p className="notice">모든 번호 조합은 무작위로 생성됩니다.</p>
+          <p className="notice">다시 추천받으면 현재 추천 목록이 새 번호 5게임으로 바뀝니다.</p>
         </section>
       </section>
 
       {results.length > 0 && (
         <section className="results" aria-labelledby="results-title">
           <div className="section-heading">
-            <div><h2 id="results-title">추천 번호</h2><p>마음에 드는 조합을 선택해 보세요.</p></div>
-            <button className="text-btn" type="button" onClick={recommend}>↻ 다시 추천</button>
+            <div><h2 id="results-title">추천 번호 <span className="result-count">{results.length}게임</span></h2><p>‘+’ 오른쪽 숫자는 보너스 번호입니다.</p></div>
+            <button className="text-btn" type="button" onClick={recommendMore}>＋ 5게임 더 추천</button>
           </div>
           <div className="result-grid">
-            {results.map((numbers, index) => (
-              <article className="result-card" key={index}>
+            {results.map((game, index) => (
+              <article className="result-card" key={`${index}-${game.numbers.join("-")}-${game.bonus}`}>
                 <div className="result-card-top">
-                  <span>COMBINATION {index + 1}</span>
+                  <span>GAME {String(index + 1).padStart(2, "0")}</span>
                   <button className="copy-btn" type="button"
-                    onClick={() => copyNumbers(numbers)}
-                    aria-label={`${index + 1}번 조합 복사`}>복사</button>
+                    onClick={() => copyNumbers(game)}
+                    aria-label={`${index + 1}번 게임 번호 복사`}>복사</button>
                 </div>
-                <div className="balls" aria-label={numbers.join(", ")}>
-                  {numbers.map((number) => <span key={number} className={`ball ${getBallColor(number)}`}>{number}</span>)}
+                <div className="balls" aria-label={`로또 번호 ${game.numbers.join(", ")} 보너스 번호 ${game.bonus}`}>
+                  {renderGameNumbers(game)}
                 </div>
               </article>
             ))}
@@ -108,19 +118,19 @@ function App() {
 
       <section className="history-section" aria-labelledby="history-title">
         <div className="section-heading">
-          <div><h2 id="history-title">최근 추천 번호</h2><p>이번 접속 중 생성한 번호입니다.</p></div>
+          <div><h2 id="history-title">최근 추천 번호</h2><p>이번 접속 중 생성한 최근 20게임입니다.</p></div>
         </div>
         {history.length === 0 ? (
-          <div className="empty-state"><span aria-hidden="true">◎</span><p>아직 추천 번호가 없습니다.</p><p>행운 번호 추천받기를 눌러 시작하세요.</p></div>
+          <div className="empty-state"><span aria-hidden="true">◎</span><p>아직 추천 번호가 없습니다.</p><p>로또 번호 추천받기를 눌러 시작하세요.</p></div>
         ) : (
           <div className="history-list">
-            {history.map((numbers, index) => (
-              <div className="history-row" key={`${index}-${numbers.join("-")}`}>
+            {history.map((game, index) => (
+              <div className="history-row" key={`${index}-${game.numbers.join("-")}-${game.bonus}`}>
                 <span className="history-index">{String(index + 1).padStart(2, "0")}</span>
-                <div className="mini-balls" aria-label={numbers.join(", ")}>
-                  {numbers.map((number) => <span className={`mini-ball ${getBallColor(number)}`} key={number}>{number}</span>)}
+                <div className="mini-balls" aria-label={`로또 번호 ${game.numbers.join(", ")} 보너스 번호 ${game.bonus}`}>
+                  {renderGameNumbers(game, true)}
                 </div>
-                <button className="copy-btn" type="button" onClick={() => copyNumbers(numbers)}>복사</button>
+                <button className="copy-btn" type="button" onClick={() => copyNumbers(game)}>복사</button>
               </div>
             ))}
           </div>
