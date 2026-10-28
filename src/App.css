@@ -80,3 +80,16 @@ h2 { margin: 0; font-size: 20px; letter-spacing: -.5px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+ .result-count { display: inline-block; margin-left: 6px; padding: 4px 8px; border-radius: 7px; background: #293b2b; color: #b8fa83; font-size: 12px; vertical-align: 3px; letter-spacing: 0; }
+.balls { align-items: center; justify-content: flex-start; gap: 8px; }
+.bonus-plus { display: grid; place-items: center; min-width: 16px; color: #b8fa83; font-size: 23px; font-weight: 500; }
+.bonus-ball { outline: 2px solid #b8fa83; outline-offset: 3px; margin-left: 2px; }
+.mini-balls { align-items: center; }
+.mini-plus { display: grid; place-items: center; min-width: 10px; color: #b8fa83; font-size: 17px; font-weight: 700; }
+.mini-ball.bonus-ball { outline-width: 1px; outline-offset: 2px; margin-left: 2px; }
+@media (max-width: 480px) {
+  .balls { gap: 7px; }
+  .bonus-plus { min-width: 12px; font-size: 20px; }
+  .mini-balls { gap: 4px; }
+  .mini-plus { min-width: 8px; font-size: 14px; }
+}
