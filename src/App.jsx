@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 const getBallColor = (number) => {
@@ -25,6 +25,24 @@ function App() {
   const [results, setResults] = useState([]);
   const [history, setHistory] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("lottopick-theme") === "light" ? "light" : "dark";
+    } catch {
+      return "dark";
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("lottopick-theme", theme);
+    } catch {
+      // Theme still works for this session if storage is unavailable.
+    }
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((current) => current === "dark" ? "light" : "dark");
 
   const recommend = () => {
     const newResults = Array.from({ length: 5 }, generateGame);
@@ -62,13 +80,19 @@ function App() {
   );
 
   return (
-    <main className="app">
+    <main className={`app ${theme}-theme`}>
       <header className="header">
         <a className="logo" href="#" aria-label="LottoPick 홈">
           <span className="logo-icon">L</span>
           <span>Lotto<span className="green">Pick</span></span>
         </a>
-        <span className="header-label">LOTTO 6/45</span>
+        <div className="header-actions">
+          <span className="header-label">LOTTO 6/45</span>
+          <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "dark" ? "화이트모드로 변경" : "다크모드로 변경"} title={theme === "dark" ? "화이트모드" : "다크모드"}>
+            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+            <span>{theme === "dark" ? "화이트모드" : "다크모드"}</span>
+          </button>
+        </div>
       </header>
 
       <section className="hero">
@@ -102,9 +126,7 @@ function App() {
               <article className="result-card" key={`${index}-${game.numbers.join("-")}-${game.bonus}`}>
                 <div className="result-card-top">
                   <span>GAME {String(index + 1).padStart(2, "0")}</span>
-                  <button className="copy-btn" type="button"
-                    onClick={() => copyNumbers(game)}
-                    aria-label={`${index + 1}번 게임 번호 복사`}>복사</button>
+                  <button className="copy-btn" type="button" onClick={() => copyNumbers(game)} aria-label={`${index + 1}번 게임 번호 복사`}>복사</button>
                 </div>
                 <div className="balls" aria-label={`로또 번호 ${game.numbers.join(", ")} 보너스 번호 ${game.bonus}`}>
                   {renderGameNumbers(game)}
