@@ -140,3 +140,15 @@ h2 { margin: 0; font-size: 20px; letter-spacing: -.5px; }
   .header-actions { gap: 7px; }
   .theme-toggle { padding: 7px 8px; gap: 5px; font-size: 11px; }
 }
+
+
+/* Screen reset button */
+.generator-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.reset-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 38px; padding: 8px 11px; border: 1px solid #354057; border-radius: 9px; background: transparent; color: #aebbd0; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+.reset-btn:hover { border-color: #b8fa83; color: #b8fa83; background: #b8fa8310; }
+:root[data-theme="light"] .reset-btn { border-color: #d3dbe7; color: #526078; }
+:root[data-theme="light"] .reset-btn:hover { border-color: #2e7d32; color: #2e7d32; background: #2e7d320a; }
+@media (max-width: 480px) {
+  .generator-actions { flex-direction: column-reverse; align-items: flex-end; gap: 6px; }
+  .reset-btn { min-height: 34px; padding: 6px 8px; font-size: 11px; }
+}
