@@ -44,6 +44,13 @@ function App() {
 
   const toggleTheme = () => setTheme((current) => current === "dark" ? "light" : "dark");
 
+  const resetScreen = () => {
+    setResults([]);
+    setHistory([]);
+    setCopied(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const recommend = () => {
     const newResults = Array.from({ length: 5 }, generateGame);
     setResults(newResults);
@@ -106,7 +113,10 @@ function App() {
               <h2 id="generator-title">행운 번호 생성기</h2>
               <p>한 번에 5게임씩 새로운 번호를 추천합니다.</p>
             </div>
-            <span className="round-tag">5 GAMES</span>
+            <div className="generator-actions">
+              <button className="reset-btn" type="button" onClick={resetScreen} title="추천 결과와 최근 기록 지우기">↺ 화면 초기화</button>
+              <span className="round-tag">5 GAMES</span>
+            </div>
           </div>
           <button className="generate-btn" type="button" onClick={recommend}>
             <span aria-hidden="true">✦</span> 로또 번호 추천받기
